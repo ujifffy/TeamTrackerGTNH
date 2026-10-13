@@ -1,0 +1,9 @@
+dependencies {
+    // Exact versions shipped by GTNH 2.9.0-beta-3.
+    compileOnly("com.github.GTNewHorizons:ServerUtilities:2.4.9:dev")
+    compileOnly("com.github.GTNewHorizons:Navigator:1.1.9:dev")
+
+    // Useful for runClient/runServer in the dev environment; not bundled into our jar.
+    runtimeOnlyNonPublishable("com.github.GTNewHorizons:ServerUtilities:2.4.9:dev")
+    runtimeOnlyNonPublishable("com.github.GTNewHorizons:Navigator:1.1.9:dev")
+}

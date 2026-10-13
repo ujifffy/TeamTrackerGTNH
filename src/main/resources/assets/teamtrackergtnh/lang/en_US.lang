@@ -1,0 +1,4 @@
+key.categories.teamtrackergtnh=Team Tracker GTNH
+key.teamtrackergtnh.toggle_map=Toggle Tracked Players On Map
+key.teamtrackergtnh.toggle_world=Toggle Tracked Players In World
+gui.teamtrackergtnh.navigator_layer=ServerUtilities Teammates

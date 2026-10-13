@@ -1,0 +1,4 @@
+key.categories.teamtrackergtnh=Team Tracker GTNH
+key.teamtrackergtnh.toggle_map=Показывать игроков команды на карте
+key.teamtrackergtnh.toggle_world=Показывать игроков команды в мире
+gui.teamtrackergtnh.navigator_layer=Сокомандники ServerUtilities

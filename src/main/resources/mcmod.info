@@ -1,0 +1,16 @@
+{
+  "modListVersion": 2,
+  "modList": [{
+    "modid": "${modId}",
+    "name": "${modName}",
+    "description": "Tracks online ServerUtilities team members on Xaero maps via Navigator and optionally in-world.",
+    "version": "${modVersion}",
+    "mcversion": "${minecraftVersion}",
+    "authorList": ["George + ChatGPT"],
+    "credits": "Uses ServerUtilities team API and Navigator map API.",
+    "requiredMods": ["serverutilities", "navigator"],
+    "dependencies": [],
+    "dependants": [],
+    "useDependencyInformation": false
+  }]
+}
