@@ -10,3 +10,5 @@
 - `UPGRADE_0.3.0_RU.md` — world/config/network upgrade contract and replacement procedure.
 - `TARGET_PARITY_0.3.0_RU.md` — historical comparison before the 0.3.1 rendering follow-up.
 - `TARGET_PARITY_0.3.1_RU.md` — rendering follow-up after live minimap/World Map/POV feedback.
+- `TARGET_PARITY_0.3.2_RU.md` — loaded-player minimap handoff, larger heads and the 16–32 block POV fade.
+- `BUILD_0.3.2_RU.md` — 0.3.2 artifact provenance and static verification results.

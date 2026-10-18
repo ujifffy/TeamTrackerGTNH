@@ -16,12 +16,12 @@
 | Network | Teammate logout | Marker disappears next sync |
 | Network | Receiver reconnect | Old state is cleared before new packets |
 | Network | Several teammates | All current-dimension markers render; no UUID/cache collisions observed |
-| Map | Loaded teammate inside minimap, radar ON | Exactly one Xaero-looking head, native radar owns it |
-| Map | Loaded teammate inside minimap, radar OFF | Decide desired fallback; current design may show nothing |
+| Map | Loaded teammate inside minimap, radar ON | TeamTracker head stays intact and covers the transition; no corrupted/native replacement |
+| Map | Loaded teammate inside minimap, radar OFF | The same TeamTracker head remains visible |
 | Map | Loaded teammate exits minimap bounds | Head stays at edge; no duplicate with radar |
 | Map | Remote teammate beyond render distance | Head remains visible |
 | Map | Remote teammate moving | Smooth interpolation, no 0.5s jumps |
-| Map | Teammate returns into render distance | Smooth handoff to live entity, no flicker/double icon |
+| Map | Teammate returns into render distance | Position switches to the live entity without changing the rendered face or flickering |
 | Map | Circular minimap | Edge clamp hugs circle |
 | Map | Square minimap | Edge clamp matches square or documented approximation |
 | Map | Rotating minimap | Direction remains correct during player yaw rotation |
@@ -31,11 +31,12 @@
 | World map | Live teammate | Team layer draws head + name; no reliance on ordinary entity radar |
 | World map | Zoom in/out | Icon/name scale behaves sensibly |
 | World map | Huge coordinates | No precision/overflow artifacts |
-| POV | First person, teammate in front | Translucent skin head + name visible |
+| POV | First person, teammate in front >32 blocks | Translucent two-layer skin head visible; name hidden by default |
 | POV | Teammate behind wall | Marker remains visible through terrain |
 | POV | Teammate behind camera | Behaviour understood/accepted; no random front projection |
 | POV | Very far teammate | Marker remains readable, direction correct |
-| POV | Very close teammate | No near-plane explosion/flicker |
+| POV | Teammate at <=16 blocks | Marker and optional text are completely absent |
+| POV | Teammate at 16-32 blocks | Marker fades smoothly from transparent to configured opacity |
 | POV | Directly above/below | Billboard/direction stable |
 | POV | Third-person back view | Marker orientation/position sensible |
 | POV | Third-person front view | Marker orientation/position sensible |
@@ -48,7 +49,7 @@
 | Position | Same-dim teleport >128 blocks | Snaps immediately, no smear |
 | Position | Dimension change | Snaps dimension state; old POV marker disappears |
 | Position | Nether/Overworld different dims | No meaningless direction marker |
-| Skin | Normal Mojang UUID/network | Correct face + hat layer |
+| Skin | Normal Mojang UUID/network | Correct base face plus hair/hat/glasses outer layer on map and POV |
 | Skin | Sessionserver unavailable | Safe fallback, no render crash |
 | Skin | Offline-mode UUID | Safe fallback; document appearance |
 | Toggle | Map keybind | Toggles map markers independently |

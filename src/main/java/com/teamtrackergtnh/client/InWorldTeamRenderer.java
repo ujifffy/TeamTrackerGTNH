@@ -95,7 +95,8 @@ public final class InWorldTeamRenderer {
     private void renderMarker(TrackedPlayer player, double worldX, double worldY, double worldZ, double distance,
         double cameraX, double cameraY, double cameraZ) {
         float opacity = getMarkerOpacity(distance);
-        int alpha = Math.max(13, Math.min(255, Math.round(opacity * 255F)));
+        if (opacity <= 0F) return;
+        int alpha = Math.max(1, Math.min(255, Math.round(opacity * 255F)));
         RenderManager rm = RenderManager.instance;
 
         GL11.glPushMatrix();
@@ -124,8 +125,7 @@ public final class InWorldTeamRenderer {
             double headSize = 16D * Config.inWorldIconScale;
             drawHead(player, -headSize / 2D, -headSize / 2D, headSize, alpha);
 
-            int textAlpha = Math.max(32, alpha);
-            int textColor = (textAlpha << 24) | 0xFFFFFF;
+            int textColor = (alpha << 24) | 0xFFFFFF;
             double line = headSize / 2D + 4D;
 
             if (Config.showInWorldName) {
@@ -142,14 +142,16 @@ public final class InWorldTeamRenderer {
     }
 
     private static float getMarkerOpacity(double distance) {
-        float fullDistance = Math.max(1F, Config.inWorldFullOpacityDistance);
-        float t = (float) Math.max(0D, Math.min(1D, distance / fullDistance));
-        // Smoothstep avoids a visible brightness kink when the player crosses the
-        // distance at which the marker reaches full opacity.
+        float hiddenDistance = Math.max(0F, Config.inWorldHiddenDistance);
+        if (distance <= hiddenDistance) return 0F;
+
+        float fullDistance = Math.max(hiddenDistance + 1F, Config.inWorldFullOpacityDistance);
+        float t = (float) Math.max(0D, Math.min(1D, (distance - hiddenDistance) / (fullDistance - hiddenDistance)));
+        // Smoothstep keeps both ends of the 16-32 block fade free of a visible
+        // brightness jump. Up close the marker is completely absent instead of
+        // obscuring the teammate with a faint but still readable face.
         t = t * t * (3F - 2F * t);
-        float nearMultiplier = Math.max(0.05F, Math.min(1F, Config.inWorldNearOpacityMultiplier));
-        float multiplier = nearMultiplier + (1F - nearMultiplier) * t;
-        return Math.max(0.01F, Math.min(1F, Config.inWorldOpacity * multiplier));
+        return Math.max(0F, Math.min(1F, Config.inWorldOpacity * t));
     }
 
     private static String formatDistance(double distance) {

@@ -8,7 +8,7 @@ import net.minecraftforge.common.config.Property;
 public final class Config {
 
     /** Increment only when a migration step is added below. */
-    public static final int CURRENT_SCHEMA_VERSION = 2;
+    public static final int CURRENT_SCHEMA_VERSION = 3;
 
     private static Configuration configuration;
 
@@ -16,20 +16,22 @@ public final class Config {
 
     public static boolean showMapHeads = true;
     public static boolean clampOffscreenMapHeads = true;
-    public static boolean useXaeroRadarForLoadedPlayers = true;
+    public static boolean useXaeroRadarForLoadedPlayers = false;
     public static boolean interpolateRemotePlayers = true;
     public static float onMapIconScale = 1.0F;
-    public static float minimapIconScale = 1.5F;
+    public static float minimapIconScale = 2.0F;
     public static float worldMapIconScale = 2.5F;
     public static boolean showWorldMapNames = true;
     public static float worldMapNameScale = 0.75F;
 
     public static boolean showInWorldHeads = true;
-    public static boolean showInWorldName = true;
+    public static boolean showInWorldName = false;
     public static boolean showInWorldDistance = false;
     public static float inWorldOpacity = 0.45F;
+    /** Retained for config/ABI compatibility; schema 3 uses a fully hidden near zone instead. */
     public static float inWorldNearOpacityMultiplier = 0.35F;
-    public static float inWorldFullOpacityDistance = 20F;
+    public static float inWorldHiddenDistance = 16F;
+    public static float inWorldFullOpacityDistance = 32F;
     public static float inWorldMinDistance = 0F;
     public static float inWorldMarkerDistance = 8F;
     public static float inWorldIconScale = 1.0F;
@@ -65,8 +67,8 @@ public final class Config {
         useXaeroRadarForLoadedPlayers = cfg.getBoolean(
             "useXaeroRadarForLoadedPlayers",
             "client.map",
-            true,
-            "When vanilla has a live EntityPlayer inside the minimap, let Xaero's normal entity radar render it. Prevents duplicate minimap heads and mirrors modern Xaero's live/remote handoff. The fullscreen world map always uses the team layer.");
+            false,
+            "Compatibility switch: when true, a loaded EntityPlayer inside the minimap is handed to Xaero's normal entity radar. Keep false for stable teammate faces across the live/remote transition. The fullscreen world map always uses the team layer.");
         interpolateRemotePlayers = cfg.getBoolean(
             "interpolateRemotePlayers",
             "client.map",
@@ -82,10 +84,10 @@ public final class Config {
         minimapIconScale = cfg.getFloat(
             "minimapIconScale",
             "client.map",
-            1.5F,
+            2.0F,
             0.5F,
             4.0F,
-            "Extra minimap-only size multiplier. 1.5 makes the legacy 10 px marker 15 px.");
+            "Extra minimap-only size multiplier. 2.0 makes the legacy 10 px marker 20 px.");
         worldMapIconScale = cfg.getFloat(
             "worldMapIconScale",
             "client.map",
@@ -112,7 +114,7 @@ public final class Config {
             true,
             "Equivalent of modern Xaero's 'In-World Tracked Players'.");
         showInWorldName = cfg
-            .getBoolean("showInWorldName", "client.world", true, "Show teammate name below the in-world head.");
+            .getBoolean("showInWorldName", "client.world", false, "Show teammate name below the in-world head.");
         showInWorldDistance = cfg.getBoolean(
             "showInWorldDistance",
             "client.world",
@@ -124,16 +126,23 @@ public final class Config {
             "inWorldNearOpacityMultiplier",
             "client.world",
             0.35F,
-            0.05F,
+            0F,
             1.0F,
-            "Opacity multiplier at point-blank range. It smoothly reaches 1 at inWorldFullOpacityDistance.");
+            "Legacy 0.3.1 setting retained for downgrade compatibility. Ignored by 0.3.2 and newer.");
+        inWorldHiddenDistance = cfg.getFloat(
+            "inWorldHiddenDistance",
+            "client.world",
+            16F,
+            0F,
+            127F,
+            "POV marker is completely hidden at or below this distance, so it cannot cover a nearby teammate.");
         inWorldFullOpacityDistance = cfg.getFloat(
             "inWorldFullOpacityDistance",
             "client.world",
-            20F,
+            32F,
             1F,
             128F,
-            "Distance in blocks at which the POV marker reaches the configured inWorldOpacity.");
+            "Distance in blocks at which the POV marker finishes fading in and reaches inWorldOpacity.");
         inWorldMinDistance = cfg.getFloat(
             "inWorldMinDistance",
             "client.world",
@@ -193,7 +202,33 @@ public final class Config {
         // the new keys with their defaults when they are first read above.
         if (savedVersion < 2) savedVersion = 2;
 
+        if (savedVersion < 3) {
+            // The old default delegated loaded players to Xaero Entity Radar. That
+            // changes the icon renderer exactly at vanilla tracking distance and is
+            // not stable across the legacy Xaero builds used by GTNH. Disable the
+            // handoff on upgrade so the same skin-head path owns both states.
+            Property radarHandoff = cfg.get("client.map", "useXaeroRadarForLoadedPlayers", true);
+            if (radarHandoff.getBoolean(true)) radarHandoff.set(false);
+
+            // Only replace previous defaults. Explicit custom scale/fade distances
+            // remain user-owned. Name labels deliberately migrate to the new safer
+            // default once; users can turn them back on afterwards.
+            Property minimapScale = cfg.get("client.map", "minimapIconScale", 1.5D);
+            if (approximately(minimapScale.getDouble(1.5D), 1.5D)) minimapScale.set(2.0D);
+
+            Property fullOpacityDistance = cfg.get("client.world", "inWorldFullOpacityDistance", 20D);
+            if (approximately(fullOpacityDistance.getDouble(20D), 20D)) fullOpacityDistance.set(32D);
+
+            cfg.get("client.world", "showInWorldName", true)
+                .set(false);
+            savedVersion = 3;
+        }
+
         schema.set(savedVersion);
+    }
+
+    private static boolean approximately(double value, double expected) {
+        return Math.abs(value - expected) < 0.000001D;
     }
 
     public static void setShowMapHeads(boolean enabled) {

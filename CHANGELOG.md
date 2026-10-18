@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.3.2
+
+- Keep TeamTracker's own skin-head renderer active for loaded and remote minimap
+  players. This removes the broken-looking legacy Xaero Entity Radar handoff at
+  vanilla render distance.
+- Increased the default minimap head from 15 px to 20 px. Schema 3 upgrades the
+  previous default while preserving custom scale values.
+- Hide POV heads completely through 16 blocks, then smooth-fade them to the
+  configured opacity from 16 to 32 blocks.
+- Disabled POV name labels by default and added a one-time schema migration for
+  existing 0.3.1 configs. `showInWorldName=true` can still restore them.
+- Revalidated the skin UVs and explicitly preserve blended base-face then outer
+  head-layer rendering for hair, hats and glasses.
+- Added config schema 3. Unknown keys and non-default scale/fade values remain
+  preserved; network and server state formats are unchanged from 0.3.0/0.3.1.
+
 ## 0.3.1
 
 - Increased the default minimap teammate head from 10 px to 15 px.

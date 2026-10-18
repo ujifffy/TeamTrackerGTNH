@@ -21,7 +21,7 @@ public class TeamTrackerGTNH {
 
     public static final String MODID = "teamtrackergtnh";
     public static final String NAME = "Team Tracker GTNH";
-    public static final String VERSION = "0.3.1";
+    public static final String VERSION = "0.3.2";
 
     public static final Logger LOG = LogManager.getLogger(NAME);
     public static final SimpleNetworkWrapper NETWORK = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
