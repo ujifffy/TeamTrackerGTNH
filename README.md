@@ -103,7 +103,7 @@ Minecraft 1.7.10 Xaero has no native Tracked Players API. The map portion theref
 API rather than injecting a native Xaero tracked-player object. Behaviour is intentionally matched, but the settings do
 not appear inside Xaero's own GUI.
 
-The remaining render differences are documented in `docs/TARGET_PARITY_0.3.2_RU.md`. In particular, Navigator does
+The remaining render differences are documented in `docs/TARGET_PARITY_0.3.2.md`. In particular, Navigator does
 not expose the current round/square minimap shape, so edge clamping remains radial. When the compatibility switch
 `useXaeroRadarForLoadedPlayers=true` is selected explicitly, the old renderer transition and its legacy-Xaero visual
 differences also return.
